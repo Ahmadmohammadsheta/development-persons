@@ -28,9 +28,10 @@ class LoginUserController extends Controller
             $user->save();
         }
 
-        if(Auth::attempt(['phone' => $request->phone, 'password' => $request->password])){
-            $user = Auth::user();
-            $success['token']     =  $user->createToken('user')->plainTextToken;
+        if(Auth::attempt($request->only('email', 'password'))){
+            // $user = Auth::user();
+            $user = $request->user();
+            $success['token']     =  $user->createToken('authToken')->plainTextToken;
             $success['tokenName'] =  "user";
             $success['name']      =  $user;
 
