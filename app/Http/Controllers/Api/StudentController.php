@@ -50,15 +50,15 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        return $this->sendResponse(new StudentResource($this->studentRepository->find($student->id)), "بيانات الطالب", 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Student $student)
+    public function update(StudentRequest $request, Student $student)
     {
-        //
+        return $this->sendResponse(new StudentResource($this->studentRepository->edit($student->id, $request->validated())), "تم تعديل بيانات الطالب", 202);
     }
 
     /**
@@ -66,6 +66,12 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        //
+        if (!count($student->units)) {
+            $this->studentRepository->delete($student->id);
+            return $this->sendResponse("", "تم حذف الطالب", 200);
+        }else{
+            return $this->sendError("لا يمكن حذف الطالب", [], 422);
+
+        }
     }
 }
