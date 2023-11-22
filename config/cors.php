@@ -19,8 +19,8 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
-    // 'allowed_origins' => ['http://localhost:8000'],
+    // 'allowed_origins' => ['*'],
+    'allowed_origins' => ['http://localhost:8080'],
     // ama.config allowed_origins
 
     'allowed_origins_patterns' => [],
