@@ -309,17 +309,6 @@ class BaseRepository implements EloquentRepositoryInterface
 
     }
 
-    // public function forConditionsItemsPrice(array $attributes)
-    // {
-    //     return $this->model
-
-    //         ->where($this->searchingWherekeyWords($attributes))
-    //         ->where($this->whereDiscount($attributes))
-    //         ->where($this->searchingWhereprice($attributes));
-
-    // }
-
-
     /**
      * Method for all data conditions to latest
      */
@@ -339,26 +328,20 @@ class BaseRepository implements EloquentRepositoryInterface
             );
     }
 
-
-    public function forAllConditionsitems(array $attributes, $resourceCollection)
+    /**
+     * Method for all data conditions to random
+     */
+    public function forAllConditionsIndex(array $attributes, $resourceCollection)
     {
         $this->resourceCollection = $resourceCollection;
 
         return
-
-            $this->paginateResponse(
-                $this->resourceCollection::collection(
-                    $this->forAllConditions($attributes)
-                        ->orderBy('sale_price', 'DESC')
-                        ->paginate(array_key_exists('count', $attributes) ? $attributes['count'] : "")
-                ),
-                $this->forAllConditions($attributes)->paginate(array_key_exists('paginate', $attributes) ? $attributes['paginate'] : ""),
-                "paginate data; Youssof",
+            $this->sendResponse(
+                $this->resourceCollection::collection($this->forAllConditions($attributes)->limit(array_key_exists('count', $attributes) ? $attributes['count'] : "")->get()),
+                "Random data; Youssof",
                 200
             );
     }
-
-
 
     /**
      * Method for all data conditions to random
@@ -391,24 +374,6 @@ class BaseRepository implements EloquentRepositoryInterface
                 200
             );
     }
-    public function ItemsforAllConditionsPaginate(array $attributes, $resourceCollection)
-    {
-        $this->resourceCollection = $resourceCollection;
-
-        return
-            $this->paginateResponse(
-                $this->resourceCollection::collection($this->forAllConditions($attributes)
-                    ->orderBy('sale_price', 'DESC')
-                    ->paginate(array_key_exists('count', $attributes) ? $attributes['count'] : "")
-                    ),
-                $this->forAllConditions($attributes)->paginate(array_key_exists('count', $attributes) ? $attributes['count'] : ""),
-                "paginate data; Youssof",
-                200
-            );
-    }
-
-
-
 
     /**
      * Method for all data conditions to paginate
@@ -437,7 +402,7 @@ class BaseRepository implements EloquentRepositoryInterface
             : (array_key_exists('latest', $attributes) ? $this->forAllConditionsLatest($attributes, $resourceCollection)
             : (array_key_exists('archived', $attributes) ? $this->allModelsArchived($attributes, $resourceCollection)
             //: (array_key_exists('paginate', $attributes) ? $this->forAllConditions($attributes, $resourceCollection)
-            : $this->forAllConditionsRandom($attributes, $resourceCollection)
+            : $this->forAllConditionsIndex($attributes, $resourceCollection)
         ));
     }
 

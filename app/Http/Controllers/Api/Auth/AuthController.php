@@ -13,7 +13,7 @@ use App\Http\Traits\ResponseTrait as TraitResponseTrait;
 class AuthController extends Controller
 {
     use TraitResponseTrait;
-    
+
     /**
      * Register api
      *
@@ -31,7 +31,7 @@ class AuthController extends Controller
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
         $success['token'] =  $user->createToken('userToken')->plainTextToken;
-        $success['name'] =  $user;
+        $success['user'] =  $user;
         return $this->sendResponse($success, 'تم التسجيل بنجاح.');
     }
     /**
@@ -59,7 +59,7 @@ class AuthController extends Controller
             // $user = Auth::user();
             $user = $request->user();
             $success['token']     =  $user->createToken('userToken')->plainTextToken;
-            $success['name']      =  $user;
+            $success['user']      =  $user;
 
             return $this->sendResponse($success, 'تم تسجيل الدخول بنجاح.', 200);
         }
@@ -67,7 +67,7 @@ class AuthController extends Controller
             return $this->sendError('Unauthorised.', ['error'=>'بيانات غير صحيحة'], 401);
         }
     }
-    
+
     /**
     * Logout function
     *

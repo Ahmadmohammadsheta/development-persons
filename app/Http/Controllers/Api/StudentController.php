@@ -66,12 +66,7 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        if (!count($student->units)) {
-            $this->studentRepository->delete($student->id);
-            return $this->sendResponse("", "تم حذف الطالب", 200);
-        }else{
-            return $this->sendError("لا يمكن حذف الطالب", [], 422);
-
-        }
+        $this->studentRepository->delete($student->id);
+        return $this->sendResponse("", "تم حذف الطالب", 200);
     }
 }
