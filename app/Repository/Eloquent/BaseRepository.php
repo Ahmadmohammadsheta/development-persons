@@ -338,7 +338,7 @@ class BaseRepository implements EloquentRepositoryInterface
         return
             $this->sendResponse(
                 $this->resourceCollection::collection($this->forAllConditions($attributes)->limit(array_key_exists('count', $attributes) ? $attributes['count'] : "")->get()),
-                "Random data; Youssof",
+                "Index data; Youssof",
                 200
             );
     }
