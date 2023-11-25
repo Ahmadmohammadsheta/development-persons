@@ -126,6 +126,16 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->onlyTrashed()->restore();
     }
 
+
+
+
+
+
+
+
+
+
+
     /**
      * Method for data conditions where column name
      */
@@ -136,15 +146,6 @@ class BaseRepository implements EloquentRepositoryInterface
                 ->where([$attributes['columnName'] => $attributes['columnValue']]);
         };
     }
-
-    public function forApprovedItems(array $attributes)
-    {
-        return function ($q) use ($attributes) {
-            !array_key_exists('approved', $attributes) ?: $q
-                ->where(['approved' => $attributes['approved']]);
-        };
-    }
-
 
     /**
      * Method for data conditions where boolean name
@@ -158,43 +159,6 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
-     * Method for data conditions where parent category id
-     */
-    public function whereCategoryParentId(array $attributes)
-    {
-        return function ($q) use ($attributes) {
-            !array_key_exists('parent_id', $attributes) || $attributes['parent_id'] == 0   ?: $q
-                ->whereHas('category', function ($q) use ($attributes) {
-                    $q->where(['parent_id' => $attributes['parent_id']]);
-                });
-        };
-    }
-
-
-    public function whereProjectId(array $attributes)
-    {
-        return function ($q) use ($attributes) {
-            !array_key_exists('project_id', $attributes) || $attributes['project_id'] == 0   ?: $q
-                ->whereHas('project', function ($q) use ($attributes) {
-                    $q->where(['project_id' => $attributes['project_id']]);
-                });
-        };
-    }
-
-    /**
-     * Method for data conditions where category id
-     */
-    public function whereCategoryId(array $attributes)
-    {
-        return function ($q) use ($attributes) {
-            !array_key_exists('category_id', $attributes) || $attributes['category_id'] == 0   ?: $q
-                ->where(['category_id' => $attributes['category_id']]);
-        };
-    }
-
-
-
-    /**
      * Method for data searching where key words
      */
     public function searchingWherekeyWords(array $attributes)
@@ -203,35 +167,6 @@ class BaseRepository implements EloquentRepositoryInterface
             !array_key_exists('key_words', $attributes) ?: (!is_numeric($attributes['key_words']) ? $q
                 ->where('key_words', 'LIKE', "%{$attributes['key_words']}%") : $q
                 ->whereBetween('sale_price', [$attributes['key_words'] - 25, $attributes['key_words'] + 25]));
-        };
-    }
-
-    public function searchingWhereprice(array $attributes)
-    {
-
-        return function ($q) use ($attributes) {
-
-            !array_key_exists('price', $attributes) || (!is_numeric($attributes['price']) ? $q
-                ->where('key_words', 'LIKE', "%{$attributes['price']}%") : $q
-                ->where('sale_price', '<=', $attributes['price'])
-                ->where('sale_price', '!=', 0)
-                );
-
-    };
-
-}
-
-
-    /**
-     * Method for data where unit boolean column
-     */
-    public function whereUnitBooleanColumn(array $attributes)
-    {
-        return function ($q) use ($attributes) {
-            !array_key_exists('unitBooleanColumn', $attributes) ?: $q
-                ->whereHas('unit', function ($q) use ($attributes) {
-                    $q->where([$attributes['unitBooleanColumn'] => $attributes['booleanValue']]);
-                });
         };
     }
 
@@ -248,28 +183,6 @@ class BaseRepository implements EloquentRepositoryInterface
                 });
         };
     }
-
-    /**
-     * Method for data where discount
-     */
-    public function whereDiscount(array $attributes)
-    {
-        return function ($q) use ($attributes) {
-            !array_key_exists('discount', $attributes) || !array_key_exists('sale_price_two', $attributes) ?: $q
-                ->where('discount', '>', 0)->orwhere('sale_price_two', '>', 0);
-
-        };
-    }
-
-    public function whereNoParent(array $attributes)
-    {
-        return function ($q) use ($attributes) {
-            !array_key_exists('parent', $attributes)?:
-            $q->where($attributes['parent'], '<>',0 );
-
-        };
-    }
-
 
     /**
      * Method for data where discount
@@ -291,22 +204,9 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model
             ->where($this->whereColumnName($attributes))
             ->where($this->whereBooleanName($attributes))
-            ->where($this->whereCategoryParentId($attributes))
-            ->where($this->whereCategoryId($attributes))
             ->where($this->searchingWherekeyWords($attributes))
-            ->where($this->whereNoParent($attributes))
-            ->where($this->whereDiscount($attributes))
-            ->where($this->theLatest($attributes))
-            ->where($this->searchingWhereprice($attributes))
             ->where($this->whereBelongsToRelationHasBooleanColumn($attributes))
-            ->where($this->whereUnitBooleanColumn($attributes))
-            ->where($this->whereBelongsToRelationHasBooleanColumn($attributes))
-            ->where($this->whereDiscount($attributes))
-            ->where($this->theLatest($attributes))
-            ->where($this->whereProjectId($attributes))
-            ->where($this->searchingWhereprice($attributes))
-            ->where($this->forApprovedItems($attributes));
-
+            ->where($this->theLatest($attributes));
     }
 
     /**
@@ -404,20 +304,6 @@ class BaseRepository implements EloquentRepositoryInterface
             //: (array_key_exists('paginate', $attributes) ? $this->forAllConditions($attributes, $resourceCollection)
             : $this->forAllConditionsIndex($attributes, $resourceCollection)
         ));
-    }
-
-    //items
-
-    public function forAllConditionsReturnItems(array $attributes, $resourceCollection)
-    {
-        $this->resourceCollection = $resourceCollection;
-
-        return array_key_exists('paginate', $attributes) ? $this->ItemsforAllConditionsPaginate($attributes, $resourceCollection)
-            : (array_key_exists('latest', $attributes) ? $this->forAllConditionsLatest($attributes, $resourceCollection)
-            : (array_key_exists('archived', $attributes) ? $this->allModelsArchived($attributes, $resourceCollection)
-            : (array_key_exists('price', $attributes) ? $this->forAllConditionsitems($attributes, $resourceCollection)
-
-                        : $this->forAllConditionsRandom($attributes, $resourceCollection))));
     }
 
     /**

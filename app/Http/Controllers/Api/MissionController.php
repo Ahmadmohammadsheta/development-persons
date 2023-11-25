@@ -32,6 +32,8 @@ class MissionController extends Controller
      */
     public function index(Request $request)
     {
+        // two methods working
+        return $this->sendResponse(MissionResource::collection($this->missionRepository->forAllConditions($request->all())->get()), "كل المهمات", 201);
         return $this->missionRepository->forAllConditionsReturn($request->all(), MissionResource::class);
     }
 
