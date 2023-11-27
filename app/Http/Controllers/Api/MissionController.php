@@ -32,9 +32,35 @@ class MissionController extends Controller
      */
     public function index(Request $request)
     {
+        $data = $this->missionRepository->shetaForAllConditions($request->all(), array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
+        $collection = MissionResource::collection($data);
+
         // two methods working
-        return $this->sendResponse(MissionResource::collection($this->missionRepository->forAllConditions($request->all())->get()), "كل المهمات", 201);
-        return $this->missionRepository->forAllConditionsReturn($request->all(), MissionResource::class);
+        return !array_key_exists('paginate', $request->all())
+        ? $this->sendResponse($collection, "كل المهمات", 200, ['user' => auth()->user()])
+
+        : $this->paginateResponse($collection, $data, "paginated", 200, ['user' => auth()->user()]);
+
+        // another working method
+        return $this->missionRepository->shetaForAllConditionsWithResource($request->all(), MissionResource::class, array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function forAllConditions(Request $request)
+    {
+        $data = $this->missionRepository->shetaForAllConditions($request->all(), array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
+        $collection = MissionResource::collection($data);
+
+        // two methods working
+        return !array_key_exists('paginate', $request->all())
+        ? $this->sendResponse($collection, "كل المهمات", 200, ['user' => auth()->user()])
+
+        : $this->paginateResponse($collection, $data, "paginated", 200, ['user' => auth()->user()]);
+
+        // another working method
+        return $this->missionRepository->forAllConditionsWithResource($request->all(), MissionResource::class, array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
     }
 
     /**
