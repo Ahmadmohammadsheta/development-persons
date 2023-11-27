@@ -25,10 +25,10 @@ Trait ResponseTrait
      *
      * @return \Illuminate\Http\Response
      */
-    public function paginateResponse($data, $collection, $message = "", $code = 200)
+    public function paginateResponse($data, $collection, $message = "", $code = 200, $additional = [])
     {
 
-        $meta = $collection->toArray();
+        $meta = $collection->toArray() + $additional ;
 
         return $this->sendResponse($data, $message, $code, $meta);
     }
