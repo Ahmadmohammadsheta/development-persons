@@ -64,9 +64,9 @@ interface EloquentRepositoryInterface
 
 
     /**
-     * Method for all data conditions to return a wich method filtered by attributes
+     * AMA.Method for all data conditions to return a wich method filtered by attributes
      */
-    public function forAllConditionsReturn(array $attributes, $resourceCollection);
+    public function shetaForAllConditionsWithResource(array $attributes, $resourceCollection);
 
-    public function forAllConditions(array $attributes);
+    public function shetaForAllConditions(array $attributes);
 }

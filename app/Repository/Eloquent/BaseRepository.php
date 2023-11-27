@@ -165,7 +165,7 @@ class BaseRepository implements EloquentRepositoryInterface
     {
         return function ($q) use ($attributes) {
             !array_key_exists('key_words', $attributes) ?: (!is_numeric($attributes['key_words']) ? $q
-                ->where('key_words', 'LIKE', "%{$attributes['key_words']}%") : $q
+                ->where('name', 'LIKE', "%{$attributes['key_words']}%") : $q
                 ->whereBetween('sale_price', [$attributes['key_words'] - 25, $attributes['key_words'] + 25]));
         };
     }
@@ -195,6 +195,27 @@ class BaseRepository implements EloquentRepositoryInterface
         };
     }
 
+    /**
+     * Method for data where discount
+     */
+    public function amaRandom(array $attributes)
+    {
+        return function ($q) use ($attributes) {
+            !array_key_exists('random', $attributes) ?: $q
+                ->inRandomOrder();
+        };
+    }
+
+    /**
+     * Method for data where discount
+     */
+    public function amaPaginat(array $attributes)
+    {
+        return function ($q) use ($attributes) {
+            !array_key_exists('paginate', $attributes) ?: $q
+                ->paginate();
+        };
+    }
 
     /**
      * Method for all data conditions functional
@@ -205,74 +226,55 @@ class BaseRepository implements EloquentRepositoryInterface
             ->where($this->whereColumnName($attributes))
             ->where($this->whereBooleanName($attributes))
             ->where($this->searchingWherekeyWords($attributes))
-            ->where($this->whereBelongsToRelationHasBooleanColumn($attributes))
-            ->where($this->theLatest($attributes));
+            ->where($this->whereBelongsToRelationHasBooleanColumn($attributes));
     }
 
     /**
-     * Method for all data conditions to latest
+     * My Final Method for all data conditions functional
      */
-    public function forAllConditionsLatest(array $attributes, $resourceCollection)
+    public function shetaForAllConditions(array $attributes, $builder = 'get')
     {
-        $this->resourceCollection = $resourceCollection;
-
         return
-            $this->paginateResponse(
-                $this->resourceCollection::collection($this->forAllConditions($attributes)
-                    ->latest()->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")
-                    ->paginate(array_key_exists('count', $attributes) ? $attributes['count'] : "")),
-                $this->forAllConditions($attributes)->latest()->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")
-                    ->paginate(array_key_exists('count', $attributes) ? $attributes['count'] : ""),
-                "Latest data; Youssof",
-                200
-            );
-    }
-
-    /**
-     * Method for all data conditions to random
-     */
-    public function forAllConditionsIndex(array $attributes, $resourceCollection)
-    {
-        $this->resourceCollection = $resourceCollection;
-
-        return
-            $this->sendResponse(
-                $this->resourceCollection::collection($this->forAllConditions($attributes)->limit(array_key_exists('count', $attributes) ? $attributes['count'] : "")->get()),
-                "Index data; Youssof",
-                200
-            );
+            // if the request has latest
+            array_key_exists('latest', $attributes) ? $this->forAllConditions($attributes)->latest()
+                ->take(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")->$builder()
+            // else if the request has random
+            : (array_key_exists('random', $attributes) ? $this->forAllConditions($attributes)->inRandomOrder()
+                ->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")->$builder()
+            // else if the request has paginate
+            : ($builder && $builder != 'get' ? $this->forAllConditions($attributes)
+                ->$builder(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")
+            // else
+            : ($this->forAllConditions($attributes)->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")->$builder()
+        )));
     }
 
     /**
      * Method for all data conditions to random
      */
-    public function forAllConditionsRandom(array $attributes, $resourceCollection)
+    public function shetaForAllConditionsWithResource(array $attributes, $resourceCollection, $builder = 'get')
     {
         $this->resourceCollection = $resourceCollection;
 
         return
-            $this->sendResponse(
-                $this->resourceCollection::collection($this->forAllConditions($attributes)->inRandomOrder()->limit(array_key_exists('count', $attributes) ? $attributes['count'] : "")->get()),
-                "Random data; Youssof",
-                200
-            );
-    }
+            $builder == 'paginate'
+            ?
+                $this->paginateResponse(
+                    $this->resourceCollection::collection(
+                        $this->forAllConditions($attributes)->paginate(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")),
+                        $this->forAllConditions($attributes)->paginate(array_key_exists('limit', $attributes) ? $attributes['limit'] : ""),
+                        "Paginated Resource data; Youssof",
+                        200
+                )
 
-    /**
-     * Method for all data conditions to paginate
-     */
-    public function forAllConditionsPaginate(array $attributes, $resourceCollection)
-    {
-        $this->resourceCollection = $resourceCollection;
-
-        return
-            $this->paginateResponse(
-                $this->resourceCollection::collection($this->forAllConditions($attributes)
-                    ->paginate(array_key_exists('count', $attributes) ? $attributes['count'] : "")),
-                $this->forAllConditions($attributes)->paginate(array_key_exists('count', $attributes) ? $attributes['count'] : ""),
-                "paginate data; Youssof",
-                200
-            );
+            : $this->sendResponse(
+                    $this->resourceCollection::collection(
+                        $this->forAllConditions($attributes)
+                        ->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")
+                        ->get()),
+                        "Resource data; Youssof",
+                        200
+                );
     }
 
     /**
@@ -290,22 +292,7 @@ class BaseRepository implements EloquentRepositoryInterface
                 200
             );
     }
-
-    /**
-     * Method for all data conditions to return a wich method filtered by attributes
-     */
-    public function forAllConditionsReturn(array $attributes, $resourceCollection)
-    {
-        $this->resourceCollection = $resourceCollection;
-
-        return array_key_exists('paginate', $attributes) ? $this->forAllConditionsPaginate($attributes, $resourceCollection)
-            : (array_key_exists('latest', $attributes) ? $this->forAllConditionsLatest($attributes, $resourceCollection)
-            : (array_key_exists('archived', $attributes) ? $this->allModelsArchived($attributes, $resourceCollection)
-            //: (array_key_exists('paginate', $attributes) ? $this->forAllConditions($attributes, $resourceCollection)
-            : $this->forAllConditionsIndex($attributes, $resourceCollection)
-        ));
-    }
-
+    
     /**
      * @param id $attributes
      * @return Model
