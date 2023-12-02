@@ -33,7 +33,16 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->studentRepository->forAllConditionsReturn($request->all(), StudentResource::class);
+        $data = $this->studentRepository->shetaForAllConditionsWithRelations($request->all(), [], array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
+        return StudentResource::collection($data);
+        $data = $this->studentRepository->shetaForAllConditions($request->all(), array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
+        $collection = StudentResource::collection($data);
+
+        // two methods working
+        return !array_key_exists('paginate', $request->all())
+        ? $this->sendResponse($collection, "Index", 200, ['user' => auth()->user()])
+
+        : $this->paginateResponse($collection, $data, "paginated", 200, ['user' => auth()->user()]);
     }
 
     /**

@@ -250,6 +250,27 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
+     * My Final Method for all data conditions functional
+     */
+    public function shetaForAllConditionsWithRelations(array $attributes, $relations = [], $builder = 'get')
+    {
+        return
+            // if the request has latest
+            array_key_exists('latest', $attributes) ? $this->forAllConditions($attributes)->latest()
+                ->take(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")->$builder()
+            // else if the request has random
+            : (array_key_exists('random', $attributes) ? $this->forAllConditions($attributes)->inRandomOrder()
+                ->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")->$builder()
+                ->with($relations)
+            // else if the request has paginate
+            : ($builder && $builder != 'get' ? $this->forAllConditions($attributes)
+                ->$builder(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")
+            // else
+            : ($this->forAllConditions($attributes)->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")->$builder()
+        )));
+    }
+
+    /**
      * Method for all data conditions to random
      */
     public function shetaForAllConditionsWithResource(array $attributes, $resourceCollection, $builder = 'get')
@@ -292,7 +313,7 @@ class BaseRepository implements EloquentRepositoryInterface
                 200
             );
     }
-    
+
     /**
      * @param id $attributes
      * @return Model

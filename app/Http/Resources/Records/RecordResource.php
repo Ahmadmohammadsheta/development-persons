@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Missions;
+namespace App\Http\Resources\Records;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MissionResource extends JsonResource
+class RecordResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,9 +15,9 @@ class MissionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
+            'student' => $this->student->name,
+            'mission' => $this->mission->name,
+            'points' => $this->points,
         ];
     }
 }
