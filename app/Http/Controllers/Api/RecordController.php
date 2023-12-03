@@ -33,15 +33,6 @@ class RecordController extends Controller
      */
     public function index(Request $request)
     {
-        $students = Student::all();
-        foreach ($students as $student) {
-            $request['columnName']= 'student_id';
-            $request['columnValue']= $student->id;
-            // dd($request->all());
-            $records[] =  RecordResource::collection($this->recordRepository->shetaForAllConditions($request->all(), array_key_exists('paginate', $request->all()) ? 'paginate' : 'get'));
-            $records['allPoints'] = $student->missions->count();
-        }
-        return $this->sendResponse($records, '', 200);
         $data = $this->recordRepository->shetaForAllConditions($request->all(), array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
         $collection = RecordResource::collection($data);
 

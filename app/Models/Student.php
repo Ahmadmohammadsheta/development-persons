@@ -44,4 +44,24 @@ class Student extends Model
         );
     }
 
+    /**
+     * Get the user's first name.
+     */
+    protected function monthRecord(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => Record::whereMonth('created_at', Carbon::now()->month)->where('student_id', $this->id)->get(),
+        );
+    }
+
+    /**
+     * Get the user's first name.
+     */
+    protected function totalRecords(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => Record::where('student_id', $this->id)->get(),
+        );
+    }
+
 }

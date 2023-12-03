@@ -21,10 +21,18 @@ class StudentResource extends JsonResource
             'id'=> $this->id,
             'name'=> $this->name,
             'birthdate'=> $this->birthdate,
-            'records' => [
-                'total_of_today'=> $this->todayRecord->sum('points'),
-                'missions' => RecordOnlyMissionResource::collection($this->todayRecord),
-                'total_records'=> $this->records->sum('points'),
+            'today'=> Carbon::now()->format('Y-m-d'),
+            'today_records' => [
+                'sum_of_today_records'=> $this->todayRecord->sum('points'),
+                'missions_of_today_records' => RecordOnlyMissionResource::collection($this->todayRecord),
+            ],
+            'month_records' => [
+                'sum_of_month_records'=> $this->monthRecord->sum('points'),
+                'missions_of_month_records'=> RecordOnlyMissionResource::collection($this->monthRecord),
+            ],
+            'total_records' => [
+                'sum_of_total_records'=> $this->totalRecords->sum('points'),
+                'missions_of_total_records'=> RecordOnlyMissionResource::collection($this->totalRecords),
             ]
         ];
     }

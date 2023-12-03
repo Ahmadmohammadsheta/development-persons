@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Record;
+use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RecordRequest extends FormRequest
@@ -13,7 +16,18 @@ class RecordRequest extends FormRequest
     {
         return [
             'student_id' => 'required',
-            'mission_id' => 'required',
+            'mission_id' => [
+                'required',
+                'integer',
+
+                function ($attribute, $value, $fail) {
+                    $existingMission = Record::where('student_id', $this->student_id)->where('mission_id', $this->mission_id)->whereDate('created_at', Carbon::today())->first();
+
+                    if ($existingMission) {
+                        $fail('المهمة مسجلة لهذا الطالب');
+                    }
+                },
+            ],
             'points' => 'nullable',
         ];
     }

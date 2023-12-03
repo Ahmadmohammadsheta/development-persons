@@ -26,7 +26,7 @@ class StudentRepository extends BaseRepository implements StudentRepositoryInter
     {
         return function ($q) use ($attributes, $relations) {
             !$relations ?: $q->whereHas($relations, function ($q) use ($attributes) {
-                    $q->where([$attributes['relationColumnName'] => $attributes['boolean']]);
+                    $q->where([$attributes['relationColumnName'] => $attributes['relationColumnValue']]);
                 });
             };
     }

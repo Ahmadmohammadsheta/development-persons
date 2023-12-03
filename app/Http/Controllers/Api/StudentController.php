@@ -10,6 +10,7 @@ use App\Http\Requests\StudentRequest;
 use App\Repository\StudentRepositoryInterface;
 
 use App\Http\Resources\Students\StudentResource;
+use App\Http\Resources\students\studentReadResource;
 use App\Http\Traits\ResponseTrait as TraitResponseTrait;
 
 class StudentController extends Controller
@@ -36,7 +37,7 @@ class StudentController extends Controller
         $data = $this->studentRepository->shetaForAllConditionsWithRelations($request->all(), [], array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
         return StudentResource::collection($data);
         $data = $this->studentRepository->shetaForAllConditions($request->all(), array_key_exists('paginate', $request->all()) ? 'paginate' : 'get');
-        $collection = StudentResource::collection($data);
+        $collection = studentResource::collection($data);
 
         // two methods working
         return !array_key_exists('paginate', $request->all())
@@ -59,7 +60,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        return $this->sendResponse(new StudentResource($this->studentRepository->find($student->id)), "بيانات الطالب", 200);
+        return $this->sendResponse(new studentResource($this->studentRepository->find($student->id)), "بيانات الطالب", 200);
     }
 
     /**
