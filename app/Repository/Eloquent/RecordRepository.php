@@ -36,6 +36,9 @@ class RecordRepository extends BaseRepository implements RecordRepositoryInterfa
                ->$builder(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")
            // else
            : ($this->forAllConditions($attributes)->limit(array_key_exists('limit', $attributes) ? $attributes['limit'] : "")
+            ->whereHas('student', function ($q) {
+                $q->orderBy('birthdate', 'ASC');
+            })
             ->whereDate('created_at', Carbon::today())
             ->$builder()
        )));
